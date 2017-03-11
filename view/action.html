@@ -1,0 +1,119 @@
+<html>
+<head>
+<meta charset="utf-8">
+<script type="text/javascript" src="view/javascript/jquery-2.1.1.min.js"></script>
+<title>抽籤頁</title>
+</head>
+
+<body>
+
+
+<div id="nowDraw"></div>
+<form id="form_gift" action="" method="post" style="display:none;">
+	<input id="giftNumber" type="text" name="giftNumber" value="" />
+	<input type="button" value="設定獎項編號" onclick="giftSubmit();" />
+</form>
+
+
+<input id="draw" type="button" value="抽籤" onClick="DHTMLSound('lottery.mp3')">
+<button id="clear">清除抽獎紀錄</button>
+<span id="dummyspan"></span>
+
+
+<table border="1">
+<?php
+	foreach ( $this->giftArray as $key => $gift) {
+?>
+	<tr>
+		<td><?php echo $gift ; ?></td>
+		<td><?php echo isset( $_SESSION['gift_winner'][$key]) ? $_SESSION['gift_winner'][$key] : "" ; ?></td>
+	</tr>
+<?php
+	}
+?>
+</table>
+
+
+</body>
+
+
+<script type="text/javascript">	
+	$('#clear').click(function(){
+		$.ajax({
+			url: "action.php",
+			type: "POST",
+			data: {
+				input_clear: "input_clear"
+			},
+			error: function(xhr) {
+				// alert("Ajax request 發生錯誤");
+			},
+			success: function(response) {
+				
+			}	
+		});
+		
+		location = "action.php" ;
+	});
+	
+	function DHTMLSound(surl) {
+		
+		$("#draw").attr('disabled','disabled');
+		
+		document.getElementById("dummyspan").innerHTML = "<embed src='" + surl + "' hidden=true autostart=true loop=false>" ;
+		
+		$.ajax({
+			url: "action.php",
+			type: "POST",
+			data: {
+				input_draw: "input_draw"
+			},
+			error: function(xhr) {
+				// alert("Ajax request 發生錯誤");
+			},
+			success: function(response) {
+				<!-- alert( response) ; -->
+				$('#nowDraw').append( response) ;
+				$("#form_gift").css('display','block');
+			}	
+		});
+	}
+	
+	function giftSubmit() {
+		
+		var giftNumber = $('#giftNumber').val();
+		if( parseInt( giftNumber) > 25 || parseInt( giftNumber) < 1 || isNaN( giftNumber)) {
+			alert( "請填入數字1~25");
+			$('#giftNumber').val( '');
+			$('#giftNumber').focus();
+			return ;
+		}
+		
+		$.ajax({
+			url: "action.php",
+			type: "POST",
+			data: {
+				input_check: giftNumber
+			},
+			error: function(xhr) {
+				// alert("Ajax request 發生錯誤");
+			},
+			success: function(response) {
+				<!-- alert( response) ; -->
+				if ( response) {
+					$("#nowDraw").html( '');
+					$("#form_gift").css('display','none');
+					$("#draw").removeAttr('disabled');
+					$('#form_gift').submit() ;
+				} else {
+					alert( '獎項重複') ;
+					$('#giftNumber').val( '');
+					$('#giftNumber').focus();
+				}
+			}	
+		});
+	}
+</script>
+
+
+</html>
