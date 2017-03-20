@@ -22,11 +22,11 @@
 
 <table border="1">
 <?php
-	foreach ( $this->giftArray as $key => $gift) {
+	foreach ($this->giftArray as $key => $gift) {
 ?>
 	<tr>
-		<td><?php echo $gift ; ?></td>
-		<td><?php echo isset( $_SESSION['gift_winner'][$key]) ? $_SESSION['gift_winner'][$key] : "" ; ?></td>
+		<td><?php echo $gift; ?></td>
+		<td><?php echo isset($_SESSION['gift_winner'][$key]) ? $_SESSION['gift_winner'][$key] : ''; ?></td>
 	</tr>
 <?php
 	}
